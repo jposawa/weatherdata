@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { useControl } from '../../hooks/control';
-import styles from './styles.module.css';
+// import styles from './styles.module.css';
 
 export default function Graphic(props) {
   const {
@@ -10,114 +10,143 @@ export default function Graphic(props) {
     title,
     showTemperature,
     showPrecipitation,
+    mode,
   } = props;
-  const { getData } = useControl();
-  const [weatherData, setWeatherData] = useState({
-    temperature: {
-      x: [],
-      y: [],
-      type: 'scatter',
-    },
-    precipitation: {
-      x: [],
-      y: [],
-      type: 'scatter',
-    }
-  });
+  const { weatherData } = useControl();
   const [visibleData, setVisibleData] = useState([]);
+  const [revision, setRevision] = useState(0);
   const [layout, setLayout] = useState({
-    title,
     width,
     height,
+    title,
     yaxis: {},
     yaxis2: {},
   });
 
-  const organizeData = (dataObject, typeName, data) => {
-    Object.values(data).forEach(value => {
-      dataObject[typeName].x.push(value.year);
-      dataObject[typeName].y.push(value.data);
+  const organizeData = (typeName, data) => {
+    const dataObject = {
+      x: [],
+      y: [],
+      name: typeName,
+      type: 'scatter',
+      mode: mode ? mode : "lines",
+    };
+
+    data.forEach(value => {
+      dataObject.x.push(value.year);
+      dataObject.y.push(value.data.toFixed(2));
     });
+
+    return { ...dataObject };
   }
-
-  const updateWeatherData = async () => {
-    try {
-      const _weatherData = { ...weatherData };
-      const temperatureData = await getData('TEMPERATURE');
-      const precipitationData = await getData('PRECIPITATION');
-
-      organizeData(_weatherData, 'temperature', temperatureData);
-      organizeData(_weatherData, 'precipitation', precipitationData);
-
-      setWeatherData(_weatherData);
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
-
-  useEffect(() => {
-    updateWeatherData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const _layout = { ...layout };
     let _visibleData;
 
-    if (showTemperature && showPrecipitation) {
-      _layout.yaxis = {
-        title: 'Precipitation',
+    if (weatherData && weatherData.temperature && weatherData.precipitation) {
+      _layout.xaxis = {
+        range: [1901, 2021],
       };
-      _layout.yaxis2 = {
-        title: 'Temperature',
-        titlefont: {
-          color: '#ff7f0e',
-        },
-        tickfont: {
-          color: '#ff7f0e',
-        },
-        overlaying: 'y',
-        side: 'right',
+      _layout.shapes = [{
+        name: "Ano mais frio",
+        type: 'rect',
+        x0: '1982',
+        y0: 0,
+        x1: '1984',
+        y1: 1,
+        yref: 'paper',
+        fillcolor: '#369',
+        opacity: 0.5,
+        line: {
+          width: 1,
+          color:'#369',
+        }
+      }, {
+        name: "Ano mais quente",
+        type: 'rect',
+        x0: '2019',
+        y0: 0,
+        x1: '2021',
+        y1: 1,
+        yref: 'paper',
+        fillcolor: '#c33',
+        opacity: 0.5,
+        line: {
+          width: 1,
+          color:'#c33',
+        }
+      }];
+
+      _layout.traces = [{
+        x0: '1982',
+        y0: 0,
+        x1: '1984',
+        y1: 1,
+        yref: 'paper',
+        opacity: 0,
+        text: 'Ano mais frio na terra',
+      }];
+
+      _layout.legend ={
+        x:0,
+        y:1,
+        xanchor:'left',
+        yanchor:'bottom',
       };
 
-      _visibleData = [weatherData.precipitation, weatherData.temperature];
-    }
-    else if (showTemperature) {
-      _layout.yaxis = {
-        title: 'Temperature',
-        titlefont: {
-          color: '#ff7f0e',
-        },
-        tickfont: {
-          color: '#ff7f0e',
-        },
+      if (showTemperature && showPrecipitation) {
+        _layout.yaxis = {
+          title: 'Precipitation (mm)',
+          ticklen: 4,
+        };
+        _layout.yaxis2 = {
+          title: 'Temperature (ºC)',
+          overlaying: 'y',
+          side: 'right',
+          ticklen: 4,
+        };
+
+        const temperatureData = organizeData('Temperature', weatherData.temperature);
+
+        temperatureData.yaxis = 'y2';
+
+        _visibleData = [organizeData('Precipitation', weatherData.precipitation), temperatureData];
       }
+      else if (showTemperature) {
+        _layout.yaxis = {
+          title: 'Temperature',
+          marker: {
+            color: '#ff7f0e',
+          },
+        }
 
-      _visibleData = [weatherData.temperature];
-    }
-    else if (showPrecipitation) {
-      _layout.yaxis = {
-        title: 'Precipitation',
+        _visibleData = [organizeData('Temperature', weatherData.temperature)];
       }
+      else if (showPrecipitation) {
+        _layout.yaxis = {
+          title: 'Precipitation',
+        }
 
-      _visibleData = [weatherData.precipitation];
+        _visibleData = [organizeData('Precipitation', weatherData.precipitation)];
+      }
+      _layout.datarevision = revision + 1;
+
+      setRevision(_layout.datarevision);
+      setLayout(_layout);
+      setVisibleData(_visibleData);
     }
-
-    setLayout(_layout);
-    setVisibleData([..._visibleData]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showTemperature, showPrecipitation]);
+  }, [showTemperature, showPrecipitation, weatherData]);
 
-  console.log(visibleData);
+  // console.log(visibleData);
   return (
     <>
-      {visibleData && visibleData.length > 0 && (
-        <Plot
-          data={visibleData}
-          layout={layout}
-        />
-      )}
+      <Plot
+        data={revision > 0 ? visibleData : []}
+        layout={layout}
+        revision={revision}
+      />
     </>
   );
 }

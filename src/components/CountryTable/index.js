@@ -4,6 +4,7 @@ import styles from './styles.module.css';
 export default function CountryTable(props){
   const {countryData} = props;
 
+  console.log(countryData);
   return(
     <>
     </>
