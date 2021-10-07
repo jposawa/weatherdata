@@ -1,0 +1,69 @@
+.pageContainer{
+  position: relative;
+  width:100vw;
+  height:100vh;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.pageContainer *{
+  margin:0;
+}
+
+.header{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.main{
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.countryContainer{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width:80%;
+  height:26%;
+}
+
+.graphicContainer{
+  position:relative;
+  width:80%;
+  height:100%;
+  text-align:center;
+}
+
+.graphConfigContainer{
+  position:absolute;
+  bottom:5%;
+  left:0;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.graphConfigContainer>p{
+  display:flex;
+  align-items: center;
+  margin:0.2rem 0;
+}
+
+.graphConfigContainer>p>label{
+  cursor:pointer;
+  padding-left:0.2rem;
+  transition: all 0.3s;
+}
+
+.graphConfigContainer>p>label:hover, .graphConfigContainer>p>button:hover+label{
+  padding-left:0.4rem;
+}

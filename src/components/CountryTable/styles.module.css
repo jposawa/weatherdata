@@ -1,0 +1,32 @@
+.table{
+  width:100%;
+  /* height:100%; */
+  display:flex;
+  flex-direction: column;
+}
+
+.table>div{
+  width:100%;
+  display:flex;
+  border:1px solid #333;
+}
+
+.table>div>p{
+  width:25%;
+  padding:0.2rem;
+  text-align:center;
+  border-right:1px solid #333;
+}
+
+.table>div>p:last-child{
+  border-right: none;
+}
+
+.head{
+  font-size:1.2rem;
+  font-weight: bold;
+}
+
+.values>p{
+  padding: 0.8rem 0.2rem !important;
+}
