@@ -1,5 +1,10 @@
 # weatherdata
-Graphic historical data from Brazil's temperature and precipitation over the years
+Graphic historical data from Brazil's temperature and precipitation over the years (1901 ~ 2012).
+
+The graph also shows the coldest year on Earth (1983) and the hottest (2020) although the API's data array doesn't show temperature neither precipitation data of 2020 yet.
+
+The website was made using React. The API request was made using [Axios](https://axios-http.com/docs/intro) and the graph built with [plotly](https://plotly.com/javascript/react/). For graph options switch I used the [Switch component from ant design](https://ant.design/components/switch/).
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -15,11 +20,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `yarn build`
 
