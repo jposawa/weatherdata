@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Plot from 'react-plotly.js';
 import { useControl } from '../../hooks/control';
-// import styles from './styles.module.css';
+import styles from './styles.module.css';
 
 export default function Graphic(props) {
   const {
@@ -10,7 +10,6 @@ export default function Graphic(props) {
     title,
     showTemperature,
     showPrecipitation,
-    mode,
   } = props;
   const { weatherData } = useControl();
   const [visibleData, setVisibleData] = useState([]);
@@ -21,6 +20,43 @@ export default function Graphic(props) {
     title,
     yaxis: {},
     yaxis2: {},
+    xaxis: {
+      range: [1901, 2021],
+    },
+    shapes: [{
+      type: 'rect',
+      x0: '1982',
+      y0: 0,
+      x1: '1984',
+      y1: 1,
+      yref: 'paper',
+      fillcolor: '#369',
+      opacity: 0.5,
+      line: {
+        width: 1,
+        color: '#369',
+      }
+    }, {
+      type: 'rect',
+      x0: '2019',
+      y0: 0,
+      x1: '2021',
+      y1: 1,
+      yref: 'paper',
+      fillcolor: '#c33',
+      opacity: 0.5,
+      line: {
+        width: 1,
+        color: '#c33',
+      }
+    }],
+    legend:{
+      x:0,
+      y:1,
+      xanchor:'left',
+      yanchor:'bottom',
+    },
+    revision:0,
   });
 
   const organizeData = (typeName, data) => {
@@ -29,7 +65,6 @@ export default function Graphic(props) {
       y: [],
       name: typeName,
       type: 'scatter',
-      mode: mode ? mode : "lines",
     };
 
     data.forEach(value => {
@@ -45,56 +80,6 @@ export default function Graphic(props) {
     let _visibleData;
 
     if (weatherData && weatherData.temperature && weatherData.precipitation) {
-      _layout.xaxis = {
-        range: [1901, 2021],
-      };
-      _layout.shapes = [{
-        name: "Ano mais frio",
-        type: 'rect',
-        x0: '1982',
-        y0: 0,
-        x1: '1984',
-        y1: 1,
-        yref: 'paper',
-        fillcolor: '#369',
-        opacity: 0.5,
-        line: {
-          width: 1,
-          color:'#369',
-        }
-      }, {
-        name: "Ano mais quente",
-        type: 'rect',
-        x0: '2019',
-        y0: 0,
-        x1: '2021',
-        y1: 1,
-        yref: 'paper',
-        fillcolor: '#c33',
-        opacity: 0.5,
-        line: {
-          width: 1,
-          color:'#c33',
-        }
-      }];
-
-      _layout.traces = [{
-        x0: '1982',
-        y0: 0,
-        x1: '1984',
-        y1: 1,
-        yref: 'paper',
-        opacity: 0,
-        text: 'Ano mais frio na terra',
-      }];
-
-      _layout.legend ={
-        x:0,
-        y:1,
-        xanchor:'left',
-        yanchor:'bottom',
-      };
-
       if (showTemperature && showPrecipitation) {
         _layout.yaxis = {
           title: 'Precipitation (mm)',
@@ -115,17 +100,17 @@ export default function Graphic(props) {
       }
       else if (showTemperature) {
         _layout.yaxis = {
-          title: 'Temperature',
-          marker: {
-            color: '#ff7f0e',
-          },
+          title: 'Temperature (ºC)',
         }
 
         _visibleData = [organizeData('Temperature', weatherData.temperature)];
+        _visibleData[0].line = {
+          color: '#ff7f0e',
+        };
       }
       else if (showPrecipitation) {
         _layout.yaxis = {
-          title: 'Precipitation',
+          title: 'Precipitation (mm)',
         }
 
         _visibleData = [organizeData('Precipitation', weatherData.precipitation)];
@@ -139,7 +124,6 @@ export default function Graphic(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showTemperature, showPrecipitation, weatherData]);
 
-  // console.log(visibleData);
   return (
     <>
       <Plot
@@ -147,6 +131,20 @@ export default function Graphic(props) {
         layout={layout}
         revision={revision}
       />
+
+      <div className={styles.secondaryLegend}>
+        <dl>
+          <span>
+            <dt className={styles.hot} />
+            <dd>Earth's hottest year</dd>
+          </span>
+
+          <span>
+            <dt className={styles.cold} />
+            <dd>Earth's coldest year</dd>
+          </span>
+        </dl>
+      </div>
     </>
   );
 }
