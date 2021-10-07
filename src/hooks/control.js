@@ -8,9 +8,9 @@ export const ControlProvider = ({ children }) => {
     LOCAL_PREFIX: "jpWeatherData@",
     URL: {
       API: {
-        COUNTRY: "http://api.worldbank.org/v2/country/br?format=json",
-        PRECIPITATION: "http://climatedataapi.worldbank.org/climateweb/rest/v1/country/cru/pr/year/bra",
-        TEMPERATURE: "http://climatedataapi.worldbank.org/climateweb/rest/v1/country/cru/tas/year/bra",
+        COUNTRY: "https://api.worldbank.org/v2/country/br?format=json",
+        PRECIPITATION: "https://climatedataapi.worldbank.org/climateweb/rest/v1/country/cru/pr/year/bra",
+        TEMPERATURE: "https://climatedataapi.worldbank.org/climateweb/rest/v1/country/cru/tas/year/bra",
       },
     },
   };
